@@ -1231,6 +1231,10 @@ document.getElementById('encBtn').onclick = async () => {
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
       rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+// إعادة ترتيب أو عكس الأعمدة لكل صف إذا كانت معكوسة من اليمين لليسار
+rows = rows.map(row => row.reverse());
+
       
       if (bar) bar.style.width = '90%';
     } else {
