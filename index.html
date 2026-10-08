@@ -1197,8 +1197,7 @@ $('resetAll').onclick = ()=>{
    أداة التحويل والتشفير
    ========================================================= */
 
-  
-$('#encBtn').onclick = async () => {
+  $('#encBtn').onclick = async () => {
   const memberName = $('#encMember').value;
   if (!memberName) { alert('الرجاء اختيار العضو أولاً'); return; }
   
@@ -1224,14 +1223,10 @@ $('#encBtn').onclick = async () => {
       
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
       
-      workbook.SheetNames.forEach(sheetName => {
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonSheet = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-        jsonSheet.forEach(row => {
-          if (row.length > 0) rows.push(row);
-        });
-      });
       bar.style.width = '90%';
     } else {
       st.textContent = '📄 جاري تحليل ملف PDF...';
@@ -1250,7 +1245,7 @@ $('#encBtn').onclick = async () => {
       }
     }
 
-    if (!rows.length) {
+    if (!rows || rows.length === 0) {
       throw new Error('لم يتم استخراج أي بيانات من الملف');
     }
 
@@ -1283,7 +1278,6 @@ $('#encBtn').onclick = async () => {
   }
 };
 
-  
 /* =========================================================
    فك التشفير من العضو (يدعم عدة ملفات + اختيار استبدال/دمج)
    ========================================================= */
