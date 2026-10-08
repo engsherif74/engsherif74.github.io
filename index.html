@@ -664,9 +664,15 @@ async function parsePdf(file){
   const isN=s=>/^[٠-٩0-9]+$/.test(s);
   const PF=/[\uFB50-\uFDFF\uFE70-\uFEFF]/;
   const fixAr=s=>{
-    if(!PF.test(s)) return s;
-    return s.normalize('NFKC').split(/\s+/).filter(Boolean).reverse().join(' ');
-  };
+  if(!PF.test(s)) return s;
+  const normalized=s.normalize('NFKC');
+  // عكس ترتيب الكلمات فقط
+  const words=normalized.split(/\s+/).filter(Boolean);
+  // إذا كانت كلمة واحدة → لا شيء
+  if(words.length<=1) return normalized;
+  // عكس الترتيب
+  return words.reverse().join(' ');
+};
   const LAY={A:{val:[100,170],cnt:[170,200],sec:[350,370],blk:[370,392],bld:[393,415],apt:[415,435],nm:[455,590]},
              B:{val:[40,90],cnt:[90,108],sec:[380,398],blk:[398,416],bld:[417,435],apt:[435,453],nm:[468,590]}};
   for(let n=1;n<=pdf.numPages;n++){
