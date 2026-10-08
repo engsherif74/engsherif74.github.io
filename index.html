@@ -1198,6 +1198,7 @@ $('resetAll').onclick = ()=>{
    ========================================================= */
 
   
+
 $('#encBtn').onclick = async () => {
   const memberName = $('#encMember').value;
   if (!memberName) { alert('الرجاء اختيار العضو أولاً'); return; }
@@ -1218,7 +1219,7 @@ $('#encBtn').onclick = async () => {
     
     // معرفة نوع الملف تلقائياً
     const fileName = file.name.toLowerCase();
-    let extractedText = '';
+    let rows = [];
 
     if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
       // قراءة ملف الـ Excel باستخدام مكتبة SheetJS
@@ -1228,51 +1229,70 @@ $('#encBtn').onclick = async () => {
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data, { type: 'array' });
       
-      // دمج بيانات كل الشيتات أو الشيت الأول داخل الملف
-      let allTextLines = [];
       workbook.SheetNames.forEach(sheetName => {
         const worksheet = workbook.Sheets[sheetName];
         const jsonSheet = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
         jsonSheet.forEach(row => {
-          allTextLines.push(row.join(' '));
+          if (row.length > 0) rows.push(row);
         });
       });
-      extractedText = allTextLines.join('\n');
       
       bar.style.width = '90%';
     } else {
-      // قراءة ملف الـ PDF بالطريقة العادية المعتادة
+      // قراءة ملف الـ PDF بالطريقة العادية
       st.textContent = '📄 جاري تحليل ملف PDF...';
       bar.style.width = '40%';
       
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      let fullText = '';
       
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items.map(item => item.str).join(' ');
-        fullText += pageText + '\n';
-        bar.style.width = `${40 + Math.round((i / pdf.numPages) * 50)}%`;
+      for (let n = 1; n <= pdf.numPages; n++) {
+        const pg = await pdf.getPage(n);
+        const tc = await pg.getTextContent();
+        // تصفية واستخراج الصفوف كما كان في كودك الأصلي
+        let pageRows = tc.items.map(item => item.str);
+        if (pageRows.length > 0) rows.push(pageRows);
+        bar.style.width = `${40 + Math.round((n / pdf.numPages) * 50)}%`;
       }
-      extractedText = fullText;
     }
 
-    // هنا يتم تمرير النص المستخرج أيا كانت صيغته لمعالجته وعرض النتائج
-    // (استبدل الدالة التالية بالدالة التي كانت معتادة لديك لمعالجة نصوص ملفات الـ PDF)
-    processExtractedText(extractedText, u);
-    
+    if (!rows.length) {
+      throw new Error('لم يتم استخراج أي بيانات من الملف');
+    }
+
+    bar.style.width = '75%';
+    st.textContent = `🔐 جاري تشفير ملف لـ ${memberName}...`;
+
+    // تكوين حمولة البيانات وتشفيرها (نفس نظامك الأمني القديم)
+    const payload = { owner: memberName, ts: Date.now(), sourceFile: file.name, data: rows };
+    const encObj = encryptData(payload, u.password);
+
+    bar.style.width = '90%';
+    st.textContent = '💾 تنزيل الملف المشفر...';
+
+    // إنشاء رابط التحميل للملف المشفر بصيغة json
+    const blob = new Blob([JSON.stringify(encObj, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `data-${memberName}.enc.json`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+
     bar.style.width = '100%';
-    st.textContent = '✅ تم المعالجة واستخراج البيانات بنجاح!';
+    st.textContent = `✅ تم إنتاج ملف مشفر يخص العضو: ${memberName}`;
+    setTimeout(() => { bar.style.width = '0%'; progBox.classList.add('hidden'); }, 3000);
 
   } catch (err) {
     console.error(err);
     alert('حدث خطأ أثناء قراءة الملف: ' + err.message);
     st.textContent = '❌ فشل المعالجة';
+    progBox.classList.add('hidden');
   }
 };
 
+  
 /* =========================================================
    فك التشفير من العضو (يدعم عدة ملفات + اختيار استبدال/دمج)
    ========================================================= */
