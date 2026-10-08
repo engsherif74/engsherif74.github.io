@@ -1198,7 +1198,6 @@ $('resetAll').onclick = ()=>{
    ========================================================= */
 
   
-
 $('#encBtn').onclick = async () => {
   const memberName = $('#encMember').value;
   if (!memberName) { alert('الرجاء اختيار العضو أولاً'); return; }
@@ -1216,13 +1215,10 @@ $('#encBtn').onclick = async () => {
   
   try {
     bar.style.width = '20%';
-    
-    // معرفة نوع الملف تلقائياً
     const fileName = file.name.toLowerCase();
     let rows = [];
 
     if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-      // قراءة ملف الـ Excel باستخدام مكتبة SheetJS
       st.textContent = '📊 جاري تحليل ملف Excel...';
       bar.style.width = '50%';
       
@@ -1236,10 +1232,8 @@ $('#encBtn').onclick = async () => {
           if (row.length > 0) rows.push(row);
         });
       });
-      
       bar.style.width = '90%';
     } else {
-      // قراءة ملف الـ PDF بالطريقة العادية
       st.textContent = '📄 جاري تحليل ملف PDF...';
       bar.style.width = '40%';
       
@@ -1250,7 +1244,6 @@ $('#encBtn').onclick = async () => {
       for (let n = 1; n <= pdf.numPages; n++) {
         const pg = await pdf.getPage(n);
         const tc = await pg.getTextContent();
-        // تصفية واستخراج الصفوف كما كان في كودك الأصلي
         let pageRows = tc.items.map(item => item.str);
         if (pageRows.length > 0) rows.push(pageRows);
         bar.style.width = `${40 + Math.round((n / pdf.numPages) * 50)}%`;
@@ -1264,14 +1257,12 @@ $('#encBtn').onclick = async () => {
     bar.style.width = '75%';
     st.textContent = `🔐 جاري تشفير ملف لـ ${memberName}...`;
 
-    // تكوين حمولة البيانات وتشفيرها (نفس نظامك الأمني القديم)
     const payload = { owner: memberName, ts: Date.now(), sourceFile: file.name, data: rows };
     const encObj = encryptData(payload, u.password);
 
     bar.style.width = '90%';
     st.textContent = '💾 تنزيل الملف المشفر...';
 
-    // إنشاء رابط التحميل للملف المشفر بصيغة json
     const blob = new Blob([JSON.stringify(encObj, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
