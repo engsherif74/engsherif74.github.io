@@ -1197,6 +1197,7 @@ $('resetAll').onclick = ()=>{
 /* =========================================================
    أداة التحويل والتشفير
    ========================================================= */
+
 document.getElementById('encBtn').onclick = async () => {
   const memberName = document.getElementById('encMember').value;
   if (!memberName) { alert('الرجاء اختيار العضو أولاً'); return; }
@@ -1208,18 +1209,22 @@ document.getElementById('encBtn').onclick = async () => {
   const u = USERS.find(x => x.name === memberName);
   if (!u) { alert('العضو غير موجود'); return; }
   
-  const st = document.getElementById('encStatus'); st.classList.remove('hidden');
-  const progBox = document.getElementById('progBox'); progBox.classList.remove('hidden');
+  const st = document.getElementById('encStatus'); 
+  if (st) st.classList.remove('hidden');
+  
+  const progBox = document.getElementById('progBox'); 
+  if (progBox) progBox.classList.remove('hidden');
+  
   const bar = document.getElementById('progressBar');
   
   try {
-    bar.style.width = '20%';
+    if (bar) bar.style.width = '20%';
     const fileName = file.name.toLowerCase();
     let rows = [];
 
     if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-      st.textContent = '📊 جاري تحليل ملف Excel...';
-      bar.style.width = '50%';
+      if (st) st.textContent = '📊 جاري تحليل ملف Excel...';
+      if (bar) bar.style.width = '50%';
       
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data, { type: 'array' });
@@ -1227,10 +1232,10 @@ document.getElementById('encBtn').onclick = async () => {
       const worksheet = workbook.Sheets[firstSheetName];
       rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
       
-      bar.style.width = '90%';
+      if (bar) bar.style.width = '90%';
     } else {
-      st.textContent = '📄 جاري تحليل ملف PDF...';
-      bar.style.width = '40%';
+      if (st) st.textContent = '📄 جاري تحليل ملف PDF...';
+      if (bar) bar.style.width = '40%';
       
       pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       const arrayBuffer = await file.arrayBuffer();
@@ -1241,7 +1246,7 @@ document.getElementById('encBtn').onclick = async () => {
         const tc = await pg.getTextContent();
         let pageRows = tc.items.map(item => item.str);
         if (pageRows.length > 0) rows.push(pageRows);
-        bar.style.width = `${40 + Math.round((n / pdf.numPages) * 50)}%`;
+        if (bar) bar.style.width = `${40 + Math.round((n / pdf.numPages) * 50)}%`;
       }
     }
 
@@ -1249,14 +1254,14 @@ document.getElementById('encBtn').onclick = async () => {
       throw new Error('لم يتم استخراج أي بيانات من الملف');
     }
 
-    bar.style.width = '75%';
-    st.textContent = `🔐 جاري تشفير ملف لـ ${memberName}...`;
+    if (bar) bar.style.width = '75%';
+    if (st) st.textContent = `🔐 جاري تشفير ملف لـ ${memberName}...`;
 
     const payload = { owner: memberName, ts: Date.now(), sourceFile: file.name, data: rows };
     const encObj = encryptData(payload, u.password);
 
-    bar.style.width = '90%';
-    st.textContent = '💾 تنزيل الملف المشفر...';
+    if (bar) bar.style.width = '90%';
+    if (st) st.textContent = '💾 تنزيل الملف المشفر...';
 
     const blob = new Blob([JSON.stringify(encObj, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
@@ -1266,18 +1271,21 @@ document.getElementById('encBtn').onclick = async () => {
     a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
 
-    bar.style.width = '100%';
-    st.textContent = `✅ تم إنتاج ملف مشفر يخص العضو: ${memberName}`;
-    setTimeout(() => { bar.style.width = '0%'; progBox.classList.add('hidden'); }, 3000);
+    if (bar) bar.style.width = '100%';
+    if (st) st.textContent = `✅ تم إنتاج ملف مشفر يخص العضو: ${memberName}`;
+    setTimeout(() => { 
+      if (bar) bar.style.width = '0%'; 
+      if (progBox) progBox.classList.add('hidden'); 
+    }, 3000);
 
   } catch (err) {
     console.error(err);
     alert('حدث خطأ أثناء قراءة الملف: ' + err.message);
-    st.textContent = '❌ فشل المعالجة';
-    progBox.classList.add('hidden');
+    if (st) st.textContent = '❌ فشل المعالجة';
+    if (progBox) progBox.classList.add('hidden');
   }
 };
-
+  
 /* =========================================================
    فك التشفير من العضو (يدعم عدة ملفات + اختيار استبدال/دمج)
    ========================================================= */
