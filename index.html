@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="التحصيل">
+<title>تحصيل مديونية العملاء</title>
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--tx:#0f172a;--mu:#64748b;--bd:#cbd5e1;--pr:#0f766e;--pr2:#14b8a6;--soft:#ccfbf1;--warn:#fef3c7}
+@media (prefers-color-scheme:dark){:root{--bg:#0f172a;--card:#1e293b;--tx:#f1f5f9;--mu:#94a3b8;--bd:#334155;--soft:#134e4a;--warn:#422006}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,'Segoe UI',Tahoma,Roboto,sans-serif;background:var(--bg);color:var(--tx);padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+header{background:linear-gradient(135deg,var(--pr),var(--pr2));color:#fff;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 14px;border-radius:0 0 20px 20px;box-shadow:0 6px 18px rgba(15,118,110,.25)}
+.card{background:var(--card);margin:10px 12px;padding:12px;border-radius:16px;border:1px solid var(--bd);box-shadow:0 3px 12px rgba(0,0,0,.05)}
+label{display:block;font-size:12px;font-weight:700;color:var(--mu);margin-bottom:4px;text-align:center}
+select{width:100%;height:46px;padding:0 6px;border:1.5px solid var(--bd);border-radius:12px;background:var(--bg);color:var(--tx);font-family:inherit;font-size:14px;font-weight:700;text-align:center;text-align-last:center}
+select:focus{outline:none;border-color:var(--pr2)}
+select:disabled{opacity:.5}
+input[type=text]{width:100%;height:46px;padding:0 12px;border:1.5px solid var(--bd);border-radius:12px;background:var(--bg);color:var(--tx);font-family:inherit;font-size:14px;font-weight:700;text-align:center}
+input[type=text]:focus{outline:none;border-color:var(--pr2)}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;direction:ltr}
+.row3>div{direction:rtl}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:linear-gradient(135deg,var(--pr),var(--pr2));color:#fff;padding:8px 3px;font-size:12px}
+td{padding:8px 3px;border-bottom:1px solid var(--bd);text-align:center}
+td.nm{text-align:right;font-weight:800}
+td.v{font-weight:800;color:var(--pr);direction:ltr}
+tr.tot td{background:var(--soft);font-weight:800;border-top:2px solid var(--pr);font-size:14px}
+.empty{text-align:center;color:var(--mu);padding:16px 6px;font-size:13px}
+button{border:none;border-radius:12px;font-family:inherit;font-weight:800;cursor:pointer;color:#fff}
+button:active{transform:scale(.96)}
+.pay{background:linear-gradient(135deg,#16a34a,#15803d);padding:8px 10px;font-size:12.5px}
+.big{width:100%;height:46px;font-size:15px;background:linear-gradient(135deg,#0ea5e9,#0284c7)}
+.link{background:none;color:var(--pr);padding:4px 8px;font-size:13px}
+.red{background:none;color:#dc2626;padding:4px 8px;font-size:12px}
+.hidden{display:none!important}
+.sec{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:14px;margin-bottom:8px}
+.ok{background:var(--soft);border:1.5px solid var(--pr2);border-radius:12px;padding:9px 12px;font-size:13px;font-weight:700;margin-bottom:10px}
+.line{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:7px 2px;border-bottom:1px dashed var(--bd);font-size:13px}
+.line b{direction:ltr;color:var(--pr)}
+.line.sum{border:none;font-size:15px;font-weight:800;background:var(--soft);padding:9px 10px;border-radius:10px;margin-top:6px}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.chip{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1.5px solid var(--bd);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;background:var(--bg);color:var(--tx);margin:0;text-align:right}
+.chip input{width:20px;height:20px;flex:none;accent-color:#0f766e}
+.chip.on{border-color:var(--pr2);background:var(--soft)}
+.chip small{color:var(--mu);margin-inline-start:auto;direction:ltr}
+.sel{background:var(--warn);border:1.5px solid #f59e0b;border-radius:14px;padding:12px;text-align:center}
+.sel .t{font-size:12.5px;font-weight:700;color:var(--mu)}
+.sel .n{font-size:26px;font-weight:800;direction:ltr}
+.sel .s{font-size:12px;color:var(--mu);margin-top:2px}
+.big2{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border-radius:16px;padding:14px;text-align:center;margin:10px 12px}
+.big2 .t{font-size:13px;font-weight:700;opacity:.95}.big2 .n{font-size:30px;font-weight:800;direction:ltr}
+td.lb{text-align:right;font-size:12px;font-weight:700}
+.hrow{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.hrow h1{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;margin:0 6px;font-weight:800;line-height:1.3}
+.hrow h1 small{display:block;font-size:11px;font-weight:600;opacity:.9}
+.hbtn{background:rgba(255,255,255,.22);color:#fff;padding:8px 12px;font-size:13px;border:1px solid rgba(255,255,255,.35);border-radius:12px}
+.hbtn-sm{background:rgba(255,255,255,.22);color:#fff;padding:5px 10px;font-size:11px;border:1px solid rgba(255,255,255,.35);border-radius:8px;cursor:pointer;font-weight:700;white-space:nowrap}
+.hbtn-sm:active{transform:scale(.95)}
+.acc{width:100%;height:48px;margin-top:10px;background:linear-gradient(135deg,var(--pr),var(--pr2));font-size:15px;display:flex;justify-content:space-between;align-items:center;padding:0 16px;border-radius:12px}
+.mini{background:var(--soft);color:var(--pr);padding:7px 10px;font-size:12px;margin:4px 0 0 6px;border-radius:10px}
+.sm{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 12px}
+.sm div{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px;text-align:center}
+.sm .t{font-size:12px;color:var(--mu);font-weight:700}.sm .n{font-size:18px;font-weight:800;direction:ltr;color:var(--pr)}
+.note{margin:10px 12px;background:var(--warn);border:1.5px solid #f59e0b;border-radius:14px;padding:10px 12px;font-size:13px;font-weight:700;display:flex;gap:8px;justify-content:space-between;align-items:center}
+.bad{color:#dc2626}.good{color:#16a34a}
+.line small{color:var(--mu);font-weight:600}
+.welcome{text-align:center;padding:30px 20px}
+.welcome .icon{font-size:48px;margin-bottom:12px}
+.welcome h2{font-size:18px;margin:0 0 8px;color:var(--pr)}
+.welcome p{font-size:14px;color:var(--mu);line-height:1.7;margin:0 0 16px}
+.welcome .btn-big{width:100%;height:52px;font-size:16px;background:linear-gradient(135deg,var(--pr),var(--pr2));border-radius:14px;margin-top:8px}
+.welcome .hint{background:var(--warn);border:1.5px solid #f59e0b;border-radius:12px;padding:10px;font-size:12px;color:var(--tx);text-align:right;margin-top:14px;line-height:1.8}
+.welcome .hint b{color:var(--pr)}
+.sector-pick{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0}
+.sector-pick button{background:var(--card);color:var(--tx);border:2px solid var(--bd);padding:10px 18px;font-size:15px;font-weight:800;border-radius:12px;min-width:70px}
+.sector-pick button.on{background:linear-gradient(135deg,var(--pr),var(--pr2));color:#fff;border-color:var(--pr)}
+.sector-pick button:active{transform:scale(.95)}
+.scope-bar{background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;padding:8px 12px;margin:10px 12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700}
+.scope-bar button{background:rgba(255,255,255,.25);color:#fff;padding:5px 10px;font-size:11px;border:1px solid rgba(255,255,255,.4);border-radius:8px;font-weight:800}
+.install-btn{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:16px;right:16px;z-index:100;padding:14px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border-radius:14px;box-shadow:0 8px 24px rgba(124,58,237,.4);font-size:14px;font-weight:800;text-align:center;cursor:pointer}
+.install-btn:active{transform:scale(.98)}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <button class="hbtn-sm" id="upBtnTop" title="رفع ملف Excel/CSV/PDF">📁 رفع ملف</button>
+    <h1 id="ttl">تحصيل مديونية العملاء</h1>
+    <button class="hbtn" id="det">تفاصيل التحصيل</button>
+    <button class="hbtn hidden" id="back">رجوع</button>
+  </div>
+</header>
+
+<div id="scopeBar" class="scope-bar hidden">
+  <span id="scopeTxt">📦 جزئيتك: —</span>
+  <button id="changeScope">تغيير الجزئية</button>
+</div>
+
+<div id="v1">
+<div id="note" class="note hidden"><span id="noteT"></span><button class="red" id="noteX">إغلاق</button></div>
+
+<div id="scopePick" class="card welcome hidden">
+  <div class="icon">🎯</div>
+  <h2>اختر جزئيتك</h2>
+  <p>اختر القطاعات التي تعمل عليها</p>
+  <div class="sector-pick" id="sectorPick"></div>
+  <div style="margin:14px 0 6px">
+    <input type="text" id="customSectors" placeholder="أو اكتب أرقام القطاعات (مثال: 4 أو 4,7)" style="direction:ltr;text-align:center">
+  </div>
+  <button class="btn-big" id="saveSectors" style="width:100%;height:52px;font-size:16px;background:linear-gradient(135deg,var(--pr),var(--pr2));border-radius:14px;margin-top:8px;color:#fff;font-weight:800">حفظ ومتابعة</button>
+</div>
+
+<div id="welcome" class="card welcome hidden">
+  <div class="icon">📊</div>
+  <h2>مرحباً بك</h2>
+  <p>ارفع ملف Excel أو CSV أو PDF يحتوي على بيانات العملاء</p>
+  <button class="btn-big" id="welcomeUp">📁 رفع ملف بيانات</button>
+  <div class="hint">
+    <b>صيغة الملف المطلوبة (الأعمدة بهذا الترتيب):</b>
+    <div style="margin-top:6px;font-size:11px">
+      1. قطاع | 2. شهر الإصدار | 3. القيمة | 4. العدد | 5. اسم العميل | 6. بلوك | 7. عمارة | 8. شقة
+    </div>
+    <div style="margin-top:6px;font-size:11px;color:var(--mu)">
+      ⓘ التطبيق يتعرف تلقائياً على أعمدة الملف مهما كان اتجاهها
+    </div>
+  </div>
+</div>
+
+<div id="mainArea" class="hidden">
+  <div class="card">
+    <div class="row3">
+      <div><label for="sec">القطاع</label><select id="sec"><option value="">اختر</option></select></div>
+      <div><label for="blk">البلوك</label><select id="blk" disabled><option value="">اختر</option></select></div>
+      <div><label for="bld">العمارة</label><select id="bld" disabled><option value="">اختر</option></select></div>
+    </div>
+  </div>
+  <div id="msg" class="ok hidden" style="margin:10px 12px;white-space:pre-line"></div>
+  <div class="card hidden" id="res">
+    <table>
+      <thead><tr><th style="width:12%">الشقة</th><th>اسم العميل</th><th style="width:11%">العدد</th><th style="width:17%">القيمة</th><th style="width:19%">سداد</th></tr></thead>
+      <tbody id="rows"></tbody>
+      <tfoot><tr class="tot"><td colspan="2">المتبقي في العمارة</td><td id="tc">0</td><td id="tv" style="direction:ltr">0</td><td></td></tr></tfoot>
+    </table>
+    <div style="margin-top:10px"><button class="big" id="pick">مجموع شقق معينة</button></div>
+  </div>
+  <div class="card hidden" id="panel">
+    <div class="sec"><span>اختر الشقق المطلوبة</span><button class="link" id="all">تحديد الكل</button></div>
+    <div class="chips" id="chips"></div>
+    <div class="sel"><div class="t">مجموع الشقق المختارة</div><div class="n" id="sv">0</div><div class="s" id="ss">لم يتم اختيار شقق</div></div>
+  </div>
+  <div class="card hidden" id="coll">
+    <div class="sec"><span>المحصّل من هذه العمارة</span></div>
+    <div id="collRows"></div>
+  </div>
+</div>
+
+<div class="card">
+  <input type="file" id="file" accept=".xlsx,.xls,.csv,.pdf,application/pdf" multiple class="hidden">
+  <div id="upSt" class="empty hidden"></div>
+  <div id="imp" class="hidden"></div>
+</div>
+</div>
+
+<div id="v2" class="hidden">
+  <div class="big2"><div class="t">المتبقي من المديونية</div><div class="n" id="rem">0</div></div>
+  <div class="sm"><div><div class="t">إجمالي المديونية</div><div class="n" id="ta2">0</div></div><div><div class="t">إجمالي المحصّل</div><div class="n" id="tb2">0</div></div></div>
+  <div style="margin:0 12px">
+    <button class="acc" data-a="blocks"><span>التحصيل والمتبقي حسب البلوكات</span><span>▾</span></button>
+    <div class="card hidden" id="a-blocks" style="margin:8px 0 0">
+      <table><thead><tr><th style="width:26%">البلوك</th><th>إجمالي المديونية</th><th>المحصّل</th><th>المتبقي</th></tr></thead><tbody id="bt"></tbody>
+      <tfoot><tr class="tot"><td class="lb">الإجمالي</td><td id="ta" style="direction:ltr">0</td><td id="tb" style="direction:ltr">0</td><td id="tcc" style="direction:ltr">0</td></tr></tfoot></table>
+    </div>
+    <button class="acc" data-a="days"><span>سجل التحصيلات اليومية</span><span>▾</span></button>
+    <div class="card hidden" id="a-days" style="margin:8px 0 0"><div id="days"></div></div>
+    <button class="acc" data-a="months"><span>سجل التحصيلات الشهرية (الأرشيف)</span><span>▾</span></button>
+    <div class="card hidden" id="a-months" style="margin:8px 0 0"><div id="months"></div></div>
+  </div>
+</div>
+
+<div id="installBtn" class="install-btn hidden">📲 تثبيت التطبيق على الجوال</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const f=n=>Number(n).toLocaleString('en-US');
+const p2=n=>String(n).padStart(2,'0');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const key=(s,b,m,a)=>[s,b,m,a].join('-');
+const uniq=a=>[...new Set(a)].sort((x,y)=>x-y);
+const sum=(a,i)=>a.reduce((x,d)=>x+d[i],0);
+const sumP=a=>a.reduce((x,p)=>x+p.v,0);
+const monthKey=(d=new Date())=>d.getFullYear()+'-'+p2(d.getMonth()+1);
+const monthLabel=k=>{const[y,m]=k.split('-');try{return new Date(+y,+m-1,1).toLocaleDateString('ar-EG-u-nu-latn',{month:'long',year:'numeric'});}catch(e){return k;}};
+const ls=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v;}catch(e){return d;}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+
+/* التخزين */
+let _db=null;
+const openDb=()=>new Promise((res,rej)=>{const r=indexedDB.open('collect_db',1);r.onupgradeneeded=()=>r.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});
+const kvGet=async k=>{_db=_db||await openDb();return new Promise((res,rej)=>{const q=_db.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error);});};
+const kvSet=async(k,v)=>{_db=_db||await openDb();return new Promise((res,rej)=>{const t=_db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error);});};
+
+/* البيانات */
+let DATA=[];
+let paid=ls('collect_v1',[]);
+let arcIdx=ls('collect_arcidx',[]);
+let cur=[];
+let ISSUE_MONTH=ls('collect_issue_month','');
+let MY_SECTORS=ls('collect_my_sectors',null); // null = لم يحدد بعد
+if(!Array.isArray(paid))paid=[];
+if(!Array.isArray(arcIdx))arcIdx=[];
+const savePaid=()=>lsSet('collect_v1',paid);
+const saveIssueMonth=()=>lsSet('collect_issue_month',ISSUE_MONTH);
+const saveMySectors=()=>lsSet('collect_my_sectors',MY_SECTORS);
+const paidSet=()=>new Set(paid.map(p=>key(p.s,p.b,p.m,p.a)));
+const saveData=async()=>{try{await kvSet('data',DATA);}catch(e){}};
+const saveIssueMonthDb=async()=>{try{await kvSet('issue_month',ISSUE_MONTH);}catch(e){}};
+
+/* ====== قراءة القطاعات من الرابط ====== */
+function readSectorsFromUrl(){
+  const params=new URLSearchParams(location.search);
+  const raw=params.get('sectors')||params.get('s')||'';
+  if(!raw) return null;
+  const sectors=raw.split(/[,،\s]+/).map(x=>parseInt(x,10)).filter(n=>!isNaN(n)&&n>0);
+  return sectors.length?sectors:null;
+}
+
+/* ====== فلترة البيانات حسب الجزئية ====== */
+function filterData(){
+  if(!MY_SECTORS||!MY_SECTORS.length) return DATA.slice();
+  const set=new Set(MY_SECTORS);
+  return DATA.filter(d=>set.has(d[0]));
+}
+
+/* ====== عرض شريط الجزئية ====== */
+function updateScopeBar(){
+  if(!MY_SECTORS||!MY_SECTORS.length){
+    $('scopeBar').classList.add('hidden');
+    return;
+  }
+  $('scopeBar').classList.remove('hidden');
+  $('scopeTxt').textContent='📦 جزئيتك: قطاع '+MY_SECTORS.join('، ');
+}
+
+/* ====== شاشة اختيار الجزئية ====== */
+function showSectorPicker(){
+  $('scopePick').classList.remove('hidden');
+  $('welcome').classList.add('hidden');
+  $('mainArea').classList.add('hidden');
+
+  // استخراج القطاعات المتاحة من البيانات
+  const available=uniq(DATA.map(d=>d[0]));
+  const wrap=$('sectorPick');
+  if(available.length){
+    wrap.innerHTML=available.map(s=>`<button data-s="${s}">قطاع ${s}</button>`).join('');
+    wrap.querySelectorAll('button').forEach(btn=>{
+      btn.onclick=()=>{
+        btn.classList.toggle('on');
+        updateCustomFromButtons();
+      };
+    });
+  } else {
+    wrap.innerHTML='<div style="color:var(--mu);font-size:12px">لا توجد بيانات — ارفع ملفاً أولاً</div>';
+  }
+}
+function updateCustomFromButtons(){
+  const picked=[...document.querySelectorAll('#sectorPick button.on')].map(b=>+b.dataset.s);
+  $('customSectors').value=picked.join(',');
+}
+
+/* ====== حفظ الجزئية ====== */
+function saveSectorsFromInput(){
+  let sectors=[];
+  // من الأزرار
+  const fromButtons=[...document.querySelectorAll('#sectorPick button.on')].map(b=>+b.dataset.s);
+  // من الحقل النصي
+  const customRaw=$('customSectors').value.trim();
+  const fromCustom=customRaw?customRaw.split(/[,،\s]+/).map(x=>parseInt(x,10)).filter(n=>!isNaN(n)&&n>0):[];
+  // دمج
+  sectors=uniq([...fromButtons,...fromCustom]);
+
+  if(!sectors.length){
+    alert('⚠️ اختر قطاعاً واحداً على الأقل أو اكتب أرقام القطاعات');
+    return;
+  }
+
+  // التحقق: هل هذه القطاعات موجودة فعلاً؟
+  const available=new Set(DATA.map(d=>d[0]));
+  const valid=sectors.filter(s=>available.has(s));
+  const invalid=sectors.filter(s=>!available.has(s));
+
+  if(!valid.length){
+    alert('⚠️ القطاعات المختارة غير موجودة في البيانات\nالقطاعات المتاحة: '+[...available].join('، '));
+    return;
+  }
+  if(invalid.length){
+    const ok=confirm(`تنبيه: القطاعات التالية غير موجودة في البيانات وستُتجاهل: ${invalid.join('، ')}\n\nالمتابعة بـ: ${valid.join('، ')}؟`);
+    if(!ok) return;
+  }
+
+  MY_SECTORS=valid;
+  saveMySectors();
+  updateScopeBar();
+  $('scopePick').classList.add('hidden');
+  refresh();
+}
+
+/* ====== زر تغيير الجزئية ====== */
+$('changeScope').onclick=()=>{
+  if(!confirm('هل تريد تغيير جزئيتك؟')) return;
+  MY_SECTORS=null;
+  saveMySectors();
+  $('customSectors').value='';
+  document.querySelectorAll('#sectorPick button').forEach(b=>b.classList.remove('on'));
+  showSectorPicker();
+};
+$('saveSectors').onclick=saveSectorsFromInput;
+
+/* ====== الأرشفة الشهرية ====== */
+async function rollover(){
+  const now=monthKey();
+  const cm=localStorage.getItem('collect_month');
+  if(!cm){localStorage.setItem('collect_month',now);return;}
+  if(cm===now) return;
+  if(!DATA.length){localStorage.setItem('collect_month',now);return;}
+  const entry={m:cm,ts:Date.now(),raw:DATA,paid:paid.slice(),issueMonth:ISSUE_MONTH};
+  let k='arc:'+cm;
+  try{ if(await kvGet(k)) k+='-'+Date.now(); await kvSet(k,entry); }catch(e){return;}
+  arcIdx.unshift({k,m:cm,total:sumP(paid),n:paid.length,rows:DATA.length,issueMonth:ISSUE_MONTH});
+  lsSet('collect_arcidx',arcIdx);
+  const ps=paidSet();
+  DATA=DATA.filter(d=>!ps.has(key(d[0],d[1],d[2],d[3])));
+  paid=[]; savePaid(); await saveData();
+  localStorage.setItem('collect_month',now);
+}
+
+/* ====== القوائم ====== */
+function setOpts(id,vals,label,sel){
+  const el=$(id);
+  el.innerHTML='<option value="">اختر</option>'+vals.map(v=>`<option value="${v}">${label} ${p2(v)}</option>`).join('');
+  el.disabled=!vals.length;
+  el.value=vals.includes(sel)?String(sel):'';
+}
+function refresh(){
+  if(!DATA.length){
+    $('welcome').classList.remove('hidden');
+    $('mainArea').classList.add('hidden');
+    $('scopePick').classList.add('hidden');
+    return;
+  }
+
+  // إذا لم يحدد الجزئية بعد → أظهر شاشة الاختيار
+  if(!MY_SECTORS||!MY_SECTORS.length){
+    showSectorPicker();
+    return;
+  }
+
+  $('scopePick').classList.add('hidden');
+  $('welcome').classList.add('hidden');
+  $('mainArea').classList.remove('hidden');
+
+  const filtered=filterData();
+  const ps=paidSet();
+  const rem=filtered.filter(d=>!ps.has(key(d[0],d[1],d[2],d[3])));
+
+  // القوائم - محدودة بالقطاعات المسموحة
+  const s=+$('sec').value,b=+$('blk').value,m=+$('bld').value;
+  setOpts('sec',uniq(rem.map(d=>d[0])),'قطاع',s);
+  const s2=+$('sec').value;
+  setOpts('blk',s2?uniq(rem.filter(d=>d[0]===s2).map(d=>d[1])):[],'بلوك',b);
+  const b2=+$('blk').value;
+  setOpts('bld',b2?uniq(rem.filter(d=>d[0]===s2&&d[1]===b2).map(d=>d[2])):[],'عمارة',m);
+
+  renderBld(rem);
+}
+$('sec').onchange=()=>{$('blk').value='';$('bld').value='';$('msg').classList.add('hidden');refresh();};
+$('blk').onchange=()=>{$('bld').value='';$('msg').classList.add('hidden');refresh();};
+$('bld').onchange=()=>{$('msg').classList.add('hidden');refresh();};
+
+function renderBld(rem){
+  const s=+$('sec').value,b=+$('blk').value,m=+$('bld').value;
+  if(s&&b&&m){
+    cur=rem.filter(d=>d[0]===s&&d[1]===b&&d[2]===m).sort((x,y)=>x[3]-y[3]);
+    $('rows').innerHTML=cur.map((d,i)=>`<tr><td>${p2(d[3])}</td><td class="nm">${esc(d[4])}</td><td>${d[5]}</td><td class="v">${f(d[6])}</td><td><button class="pay" data-i="${i}">سداد</button></td></tr>`).join('');
+    $('tc').textContent=f(sum(cur,5));
+    $('tv').textContent=f(sum(cur,6));
+    $('chips').innerHTML=cur.map((d,i)=>`<label class="chip" id="c${i}"><input type="checkbox" data-i="${i}"><span>شقة ${p2(d[3])}</span><small>${f(d[6])}</small></label>`).join('');
+    $('res').classList.remove('hidden');
+    $('panel').classList.add('hidden');
+    const L=paid.filter(p=>p.s===s&&p.b===b&&p.m===m);
+    $('coll').classList.toggle('hidden',!L.length);
+    $('collRows').innerHTML=L.map(p=>`<div class="line"><span><b style="color:var(--tx)">${esc(p.n)}</b> - شقة ${p2(p.a)}</span><b>${f(p.v)}</b></div>`).join('')+`<div class="line sum"><span>إجمالي المحصّل من العمارة</span><b>${f(sumP(L))}</b></div>`;
+    upd();
+  }else{
+    cur=[];
+    ['res','panel','coll'].forEach(i=>$(i).classList.add('hidden'));
+  }
+}
+
+/* ====== سداد ====== */
+$('rows').onclick=e=>{
+  const bt=e.target.closest('.pay');
+  if(!bt) return;
+  const d=cur[+bt.dataset.i];
+  if(!d) return;
+  if(!confirm(`تأكيد سداد شقة ${p2(d[3])}\n${d[4]}\nالمبلغ: ${f(d[6])}`)) return;
+  paid.push({s:d[0],b:d[1],m:d[2],a:d[3],n:d[4],c:d[5],v:d[6],t:Date.now()});
+  savePaid();
+  let txt=`تم سداد شقة ${p2(d[3])} - ${d[4]} - المبلغ ${f(d[6])}`;
+  if(cur.length===1) txt+=`\nتم سداد جميع شقق العمارة ${p2(d[2])} وحذفها من السجلات`;
+  $('msg').textContent=txt;
+  $('msg').classList.remove('hidden');
+  refresh();
+};
+
+/* ====== مجموع شقق معينة ====== */
+$('pick').onclick=()=>{
+  $('panel').classList.toggle('hidden');
+  if(!$('panel').classList.contains('hidden'))
+    $('panel').scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+$('chips').onchange=upd;
+$('all').onclick=()=>{
+  const bx=[...document.querySelectorAll('#chips input')];
+  const all=bx.every(x=>x.checked);
+  bx.forEach(x=>x.checked=!all);
+  upd();
+};
+function upd(){
+  let v=0,c=0,n=0;
+  const bx=document.querySelectorAll('#chips input');
+  bx.forEach(x=>{
+    const i=+x.dataset.i;
+    $('c'+i).classList.toggle('on',x.checked);
+    if(x.checked){v+=cur[i][6];c+=cur[i][5];n++;}
+  });
+  $('sv').textContent=f(v);
+  $('ss').textContent=n?`${n} شقة - عدد الفواتير ${c}`:'لم يتم اختيار شقق';
+  $('all').textContent=(bx.length&&n===bx.length)?'إلغاء التحديد':'تحديد الكل';
+}
+
+/* ====== تفاصيل التحصيل ====== */
+const dayKey=t=>{const d=new Date(t);return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());};
+const dayLabel=t=>{const d=new Date(t);let w='';try{w=d.toLocaleDateString('ar-EG',{weekday:'long'});}catch(e){}return w+' '+d.toLocaleDateString('en-GB');};
+const openAcc=new Set(), openSub=new Set();
+const payLine=(p,undo)=>`<div class="line"><span><b style="color:var(--tx)">${esc(p.n)}</b><br><small>قطاع ${p2(p.s)} - بلوك ${p2(p.b)} - عمارة ${p2(p.m)} - شقة ${p2(p.a)}</small></span><span><b>${f(p.v)}</b>${undo?` <button class="red" data-t="${p.t}">تراجع</button>`:''}</span></div>`;
+const subBtn=(id,label)=>`<button class="mini" data-sub="${id}">${label}</button>`;
+
+function renderDetails(){
+  const filtered=filterData();
+  const g={};
+  filtered.forEach(d=>{const k=d[0]+'-'+d[1];(g[k]=g[k]||{s:d[0],b:d[1],tot:0,col:0}).tot+=d[6];});
+  const allowed=new Set(MY_SECTORS||[]);
+  paid.filter(p=>!MY_SECTORS||allowed.has(p.s)).forEach(p=>{
+    const k=p.s+'-'+p.b;
+    if(g[k])g[k].col+=p.v;
+  });
+  const L=Object.values(g).sort((x,y)=>x.s-y.s||x.b-y.b);
+  $('bt').innerHTML=L.length?L.map(x=>`<tr><td class="lb">قطاع ${p2(x.s)}<br>بلوك ${p2(x.b)}</td><td class="v">${f(x.tot)}</td><td class="v">${f(x.col)}</td><td class="v">${f(x.tot-x.col)}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">لا توجد بيانات</td></tr>';
+  const ta=L.reduce((a,x)=>a+x.tot,0),tb=L.reduce((a,x)=>a+x.col,0);
+  ['ta','ta2'].forEach(i=>$(i).textContent=f(ta));
+  ['tb','tb2'].forEach(i=>$(i).textContent=f(tb));
+  $('tcc').textContent=f(ta-tb);
+  $('rem').textContent=f(ta-tb);
+
+  const myPaid=MY_SECTORS?paid.filter(p=>MY_SECTORS.includes(p.s)):paid;
+  const D={};
+  myPaid.forEach(p=>{const k=dayKey(p.t);(D[k]=D[k]||{t:p.t,L:[]}).L.push(p);});
+  const ks=Object.keys(D).sort().reverse();
+  $('days').innerHTML=ks.length?ks.map(k=>{
+    const x=D[k],id='d'+k;
+    return `<div class="line"><span>${dayLabel(x.t)} <small>(${x.L.length} شقة)</small></span><b>${f(sumP(x.L))}</b></div>${subBtn(id,'تفاصيل العملاء')}<div class="${openSub.has(id)?'':'hidden'}" id="s-${id}">${x.L.slice().sort((a,b)=>b.t-a.t).map(p=>payLine(p,true)).join('')}</div>`;
+  }).join(''):'<div class="empty">لا توجد تحصيلات بعد</div>';
+
+  const cm=monthKey();
+  let h=`<div class="line"><span>${monthLabel(cm)} <small>(الشهر الحالي - ${myPaid.length} شقة)</small></span><b>${f(sumP(myPaid))}</b></div>`;
+  h+=arcIdx.map(a=>{
+    const id='m'+a.k;
+    return `<div class="line"><span>${monthLabel(a.m)}${a.issueMonth?` <small>(إصدار: ${monthLabel(a.issueMonth)})</small>`:''} <small>(${a.n} شقة)</small></span><b>${f(a.total)}</b></div>${subBtn(id,'تفاصيل العملاء')}<div class="${openSub.has(id)?'':'hidden'}" id="s-${id}" data-load="${a.k}"></div>`;
+  }).join('');
+  $('months').innerHTML=h;
+  openSub.forEach(id=>{if(id.startsWith('m'))fillMonth(id.slice(1));});
+  ['blocks','days','months'].forEach(a=>$('a-'+a).classList.toggle('hidden',!openAcc.has(a)));
+}
+async function fillMonth(k){
+  const box=$('s-m'+k);
+  if(!box) return;
+  try{
+    const e=await kvGet(k);
+    box.innerHTML=e&&e.paid.length?e.paid.slice().sort((a,b)=>b.t-a.t).map(p=>payLine(p,false)).join(''):'<div class="empty">لا توجد تحصيلات</div>';
+  }catch(err){
+    box.innerHTML='<div class="empty">تعذر تحميل الأرشيف</div>';
+  }
+}
+$('v2').onclick=async e=>{
+  const ac=e.target.closest('.acc');
+  if(ac){
+    const a=ac.dataset.a;
+    openAcc.has(a)?openAcc.delete(a):openAcc.add(a);
+    $('a-'+a).classList.toggle('hidden',!openAcc.has(a));
+    return;
+  }
+  const sb=e.target.closest('[data-sub]');
+  if(sb){
+    const id=sb.dataset.sub,box=$('s-'+id);
+    const open=box.classList.toggle('hidden');
+    open?openSub.delete(id):openSub.add(id);
+    if(!open&&id.startsWith('m'))fillMonth(id.slice(1));
+    return;
+  }
+  const u=e.target.closest('button[data-t]');
+  if(u){
+    const p=paid.find(x=>String(x.t)===u.dataset.t);
+    if(!p) return;
+    if(!confirm(`إلغاء سداد شقة ${p2(p.a)} (عمارة ${p2(p.m)}) وإعادتها للسجلات؟`)) return;
+    paid=paid.filter(x=>x!==p);
+    savePaid();
+    renderDetails();
+    refresh();
+  }
+};
+
+/* ====== قراءة الملفات ====== */
+const AR_DIGITS='٠١٢٣٤٥٦٧٨٩';
+const toEnDigits=s=>String(s).replace(/[٠-٩]/g,d=>AR_DIGITS.indexOf(d));
+const toNum=v=>{
+  if(v==null||v==='') return 0;
+  const str=toEnDigits(v).replace(/[^\d.-]/g,'');
+  const n=parseFloat(str);
+  return isNaN(n)?0:n;
+};
+
+const parseIssueMonth=raw=>{
+  if(raw==null) return '';
+  let s=toEnDigits(String(raw)).trim();
+  if(!s) return '';
+  const digitsOnly=s.replace(/\D/g,'');
+  if(digitsOnly.length===6){
+    const y=digitsOnly.slice(0,4), m=digitsOnly.slice(4,6);
+    const mi=parseInt(m,10);
+    if(mi>=1&&mi<=12) return `${y}-${p2(mi)}`;
+  }
+  const m1=s.match(/^(\d{4})[-\/.](\d{1,2})/);
+  if(m1){
+    const mi=parseInt(m1[2],10);
+    if(mi>=1&&mi<=12) return `${m1[1]}-${p2(mi)}`;
+  }
+  return '';
+};
+
+function detectColumns(headerRow){
+  if(!headerRow||!headerRow.length) return null;
+  const norm=s=>String(s||'').replace(/[\u200c-\u200f\u202a-\u202e\u2066-\u2069]/g,'').trim();
+  const H=headerRow.map(norm);
+  const find=(...patterns)=>{
+    for(let i=0;i<H.length;i++){
+      if(!H[i]) continue;
+      for(const p of patterns){ if(H[i].includes(p)) return i; }
+    }
+    return -1;
+  };
+  const cols={
+    sec:find('قطاع'),
+    issue:find('شهر الاصدار','شهر الإصدار','تاريخ الاصدار','تاريخ الإصدار','اصدار','إصدار'),
+    val:find('القيمة','قيمة','المبلغ','مبلغ'),
+    cnt:find('العدد','عدد','الفواتير','فواتير'),
+    name:find('اسم العميل','الاسم','اسم'),
+    blk:find('بلوك'),
+    bld:find('عمارة','عقار','مبنى','بناء'),
+    apt:find('شقة','وحدة')
+  };
+  const known=Object.values(cols).filter(v=>v>=0).length;
+  if(known<4) return null;
+  return cols;
+}
+
+function rowsToData(rows, fileName){
+  const out=[];
+  let issueMonth='';
+  let cols=null;
+  let startIdx=0;
+  if(rows.length&&rows[0]){
+    cols=detectColumns(rows[0]);
+    if(cols) startIdx=1;
+  }
+  if(!cols) cols={sec:0,issue:1,val:2,cnt:3,name:4,blk:5,bld:6,apt:7};
+  const getCell=(r,idx)=>idx>=0&&idx<r.length?r[idx]:'';
+  for(let i=startIdx;i<rows.length;i++){
+    const r=rows[i];
+    if(!r||!r.length) continue;
+    if(r.every(c=>c==null||c==='')) continue;
+    const sec=toNum(getCell(r,cols.sec));
+    const issueRaw=getCell(r,cols.issue);
+    const val=toNum(getCell(r,cols.val));
+    const cnt=toNum(getCell(r,cols.cnt));
+    const nm=String(getCell(r,cols.name)==null?'':getCell(r,cols.name)).trim();
+    const blk=toNum(getCell(r,cols.blk));
+    const bld=toNum(getCell(r,cols.bld));
+    const apt=toNum(getCell(r,cols.apt));
+    if(!issueMonth&&issueRaw!=null&&issueRaw!=='') issueMonth=parseIssueMonth(issueRaw);
+    if(!sec||!blk||!bld||!apt||!nm||!val) continue;
+    out.push([sec,blk,bld,apt,nm,cnt,val]);
+  }
+  const sv=sum(out,6), sc=sum(out,5);
+  return {name:fileName,rows:out,sv,sc,ok:out.length>0,secs:uniq(out.map(r=>r[0])),issueMonth};
+}
+
+async function parseExcel(file){
+  return new Promise((res,rej)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const data=new Uint8Array(e.target.result);
+        const wb=XLSX.read(data,{type:'array'});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+        res(rowsToData(rows,file.name));
+      }catch(err){ rej(err); }
+    };
+    reader.onerror=()=>rej(new Error('تعذر قراءة الملف'));
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+async function parseCsv(file){
+  return new Promise((res,rej)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        let text=e.target.result.replace(/^\uFEFF/,'');
+        const wb=XLSX.read(text,{type:'string',raw:false});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+        res(rowsToData(rows,file.name));
+      }catch(err){ rej(err); }
+    };
+    reader.onerror=()=>rej(new Error('تعذر قراءة الملف'));
+    reader.readAsText(file,'UTF-8');
+  });
+}
+
+async function parsePdf(file){
+  if(!window.pdfjsLib){
+    await new Promise((res,rej)=>{
+      const s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      s.onload=()=>{
+        pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        res();
+      };
+      s.onerror=()=>rej(new Error('تعذر تحميل مكتبة PDF'));
+      document.head.appendChild(s);
+    });
+  }
+  const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+  const out=[];
+  const isN=s=>/^[٠-٩0-9]+$/.test(s);
+  const PF=/[\uFB50-\uFDFF\uFE70-\uFEFF]/;
+  const fixAr=s=>{
+    if(!PF.test(s)) return s;
+    return s.normalize('NFKC').split(/\s+/).filter(Boolean).reverse().join(' ');
+  };
+  const LAY={A:{val:[100,170],cnt:[170,200],sec:[350,370],blk:[370,392],bld:[393,415],apt:[415,435],nm:[455,590]},
+             B:{val:[40,90],cnt:[90,108],sec:[380,398],blk:[398,416],bld:[417,435],apt:[435,453],nm:[468,590]}};
+  for(let n=1;n<=pdf.numPages;n++){
+    const pg=await pdf.getPage(n);
+    const H=pg.view[3]-pg.view[1];
+    const tc=await pg.getTextContent();
+    const it=[];
+    tc.items.forEach(i=>{const s=(i.str||'').trim(); if(s) it.push({s,x:i.transform[4],y:H-i.transform[5]});});
+    const lay=it.some(i=>fixAr(i.s)==='العداد')?LAY.B:LAY.A;
+    const anc=it.filter(i=>i.x>585&&(isN(i.s)||i.s==='***')).sort((a,b)=>a.y-b.y);
+    for(const a of anc){
+      const r=it.filter(i=>Math.abs(i.y-a.y)<4), c={};
+      for(const k in lay) c[k]=r.filter(i=>i.x>=lay[k][0]&&i.x<lay[k][1]).sort((p,q)=>p.x-q.x);
+      if(!Object.values(c).every(v=>v.length)) continue;
+      if(!['val','cnt','sec','blk','bld','apt'].every(k=>isN(c[k][0].s))) continue;
+      const nm=c.nm.sort((p,q)=>q.x-p.x).map(i=>fixAr(i.s)).join(' ').replace(/\s+/g,' ').trim();
+      out.push([toNum(c.sec[0].s),toNum(c.blk[0].s),toNum(c.bld[0].s),toNum(c.apt[0].s),nm,toNum(c.cnt[0].s),toNum(c.val[0].s)]);
+    }
+  }
+  return {name:file.name,rows:out,sv:sum(out,6),sc:sum(out,5),ok:out.length>0,secs:uniq(out.map(r=>r[0])),issueMonth:''};
+}
+
+function parseFile(file){
+  const n=file.name.toLowerCase();
+  if(n.endsWith('.csv')) return parseCsv(file);
+  if(n.endsWith('.pdf')) return parsePdf(file);
+  return parseExcel(file);
+}
+
+let pending=null;
+$('upBtnTop').onclick=()=>$('file').click();
+$('welcomeUp').onclick=()=>$('file').click();
+$('file').onchange=async e=>{
+  const fs=[...e.target.files]; e.target.value='';
+  if(!fs.length) return;
+  const st=$('upSt');
+  st.classList.remove('hidden');
+  st.textContent='جاري قراءة الملفات...';
+  $('imp').classList.add('hidden');
+  const res=[];
+  for(const fl of fs){
+    try{ res.push(await parseFile(fl)); }
+    catch(err){ res.push({name:fl.name,rows:[],ok:false,err:String(err.message||err),issueMonth:''}); }
+  }
+  pending=res;
+  st.classList.add('hidden');
+  renderImp();
+  $('imp').scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+
+function renderImp(){
+  const R=pending||[];
+  const all=R.flatMap(r=>r.rows);
+  let detectedMonth='';
+  for(const r of R){ if(r.issueMonth){ detectedMonth=r.issueMonth; break; } }
+  const monthTxt=detectedMonth?`تحصيل المديونية عن شهر ${monthLabel(detectedMonth)}`:'';
+  $('imp').classList.remove('hidden');
+  $('imp').innerHTML=(monthTxt?`<div class="line sum" style="background:var(--warn);border:1.5px solid #f59e0b"><span>📅 ${monthTxt}</span></div>`:'')
+   +R.map(r=>`<div class="line"><span><b style="color:var(--tx)">${esc(r.name)}</b><br><small>${r.err?esc(r.err):`قطاع ${r.secs.map(p2).join('، ')} - ${f(r.rows.length)} عميل - عدد ${f(r.sc)}${r.issueMonth?` - شهر: ${monthLabel(r.issueMonth)}`:''}`}</small></span><span><b>${f(r.sv||0)}</b><br><small class="${r.ok?'good':'bad'}">${r.ok?'تمّت القراءة':'لا توجد بيانات صالحة'}</small></span></div>`).join('')
+   +`<div class="line sum"><span>الإجمالي (${f(all.length)} عميل)</span><b>${f(sum(all,6))}</b></div>
+   <div style="display:grid;gap:8px;margin-top:10px"><button class="big" id="doRep">استبدال كل البيانات بهذه الملفات</button><button class="big" id="doAdd" style="background:linear-gradient(135deg,#16a34a,#15803d)">إضافة/تحديث على البيانات الحالية</button><button class="red" id="doCan" style="padding:10px">إلغاء</button></div>`;
+  $('doCan').onclick=()=>{pending=null;$('imp').classList.add('hidden');};
+  $('doRep').onclick=()=>applyImp(true);
+  $('doAdd').onclick=()=>applyImp(false);
+}
+
+async function applyImp(replace){
+  const R=pending||[];
+  const all=R.flatMap(r=>r.rows);
+  if(!all.length) return alert('لا توجد بيانات صالحة');
+  if(replace&&!confirm('سيتم استبدال كل البيانات الحالية. متابعة؟')) return;
+  let detectedMonth='';
+  for(const r of R){ if(r.issueMonth){ detectedMonth=r.issueMonth; break; } }
+  if(detectedMonth){ ISSUE_MONTH=detectedMonth; saveIssueMonth(); await saveIssueMonthDb(); }
+  const m=new Map(replace?[]:DATA.map(d=>[key(d[0],d[1],d[2],d[3]),d]));
+  all.forEach(d=>m.set(key(d[0],d[1],d[2],d[3]),d));
+  DATA=[...m.values()];
+  await saveData();
+  pending=null;
+  $('imp').classList.add('hidden');
+  $('msg').textContent=`تم تحديث البيانات: ${f(all.length)} عميل من ${R.length} ملف`+(detectedMonth?`\nشهر الإصدار: ${monthLabel(detectedMonth)}`:'');
+  $('msg').classList.remove('hidden');
+  $('sec').value='';$('blk').value='';$('bld').value='';
+  // تحقق: هل القطاعات المحفوظة موجودة في البيانات الجديدة؟
+  if(MY_SECTORS&&MY_SECTORS.length){
+    const avail=new Set(DATA.map(d=>d[0]));
+    const valid=MY_SECTORS.filter(s=>avail.has(s));
+    if(!valid.length){
+      MY_SECTORS=null;
+      saveMySectors();
+    } else if(valid.length!==MY_SECTORS.length){
+      MY_SECTORS=valid;
+      saveMySectors();
+    }
+  }
+  updateScopeBar();
+  refresh();
+  updateTitle();
+}
+
+/* ====== العنوان ====== */
+function updateTitle(){
+  const isDetails=location.hash==='#details';
+  const base=isDetails?'تفاصيل التحصيل':'تحصيل مديونية العملاء';
+  $('ttl').innerHTML=base+(ISSUE_MONTH?`<small>عن شهر ${monthLabel(ISSUE_MONTH)}</small>`:'');
+}
+
+/* ====== التنقل ====== */
+function view(){
+  const d=location.hash==='#details';
+  $('v1').classList.toggle('hidden',d);
+  $('v2').classList.toggle('hidden',!d);
+  $('back').classList.toggle('hidden',!d);
+  $('det').classList.toggle('hidden',d);
+  updateTitle();
+  if(d) renderDetails(); else refresh();
+  window.scrollTo(0,0);
+}
+$('det').onclick=()=>{location.hash='details';};
+$('back').onclick=()=>{history.replaceState(null,'',location.pathname+location.search);view();};
+window.addEventListener('hashchange',view);
+$('noteX').onclick=()=>{localStorage.removeItem('collect_note');$('note').classList.add('hidden');};
+
+/* ====== زر تثبيت التطبيق ====== */
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  $('installBtn').classList.remove('hidden');
+});
+$('installBtn').onclick=async()=>{
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const {outcome}=await deferredPrompt.userChoice;
+  if(outcome==='accepted'){
+    $('installBtn').classList.add('hidden');
+  }
+  deferredPrompt=null;
+};
+window.addEventListener('appinstalled',()=>{
+  $('installBtn').classList.add('hidden');
+});
+
+/* ====== التشغيل ====== */
+(async function init(){
+  // 1. قراءة القطاعات من الرابط
+  const urlSectors=readSectorsFromUrl();
+  if(urlSectors&&urlSectors.length){
+    MY_SECTORS=urlSectors;
+    saveMySectors();
+  }
+
+  // 2. تحميل البيانات
+  try{
+    const d=await kvGet('data');
+    DATA=Array.isArray(d)?d:[];
+  }catch(e){DATA=[];}
+
+  // 3. تحميل شهر الإصدار
+  try{
+    const im=await kvGet('issue_month');
+    if(im&&typeof im==='string'){ ISSUE_MONTH=im; saveIssueMonth(); }
+  }catch(e){}
+
+  // 4. أرشفة تلقائية عند تغيير الشهر
+  await rollover();
+
+  // 5. عرض ملاحظة إن وُجدت
+  const n=ls('collect_note','');
+  if(n){ $('noteT').textContent=n; $('note').classList.remove('hidden'); }
+
+  // 6. تحديث شريط الجزئية
+  updateScopeBar();
+
+  // 7. عرض الواجهة
+  view();
+})();
+</script>
+</body>
+</html>
