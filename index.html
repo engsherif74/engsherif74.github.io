@@ -1197,89 +1197,86 @@ $('resetAll').onclick = ()=>{
 /* =========================================================
    أداة التحويل والتشفير
    ========================================================= */
-const encBtn = $('#encBtn');
-if (encBtn) {
-  encBtn.onclick = async () => {
-    const memberName = $('#encMember').value;
-    if (!memberName) { alert('الرجاء اختيار العضو أولاً'); return; }
-    
-    const fileInput = $('#pdffile');
-    const file = fileInput.files[0];
-    if (!file) { alert('الرجاء اختيار ملف (PDF أو Excel)'); return; }
-    
-    const u = USERS.find(x => x.name === memberName);
-    if (!u) { alert('العضو غير موجود'); return; }
-    
-    const st = $('#encStatus'); st.classList.remove('hidden');
-    const progBox = $('#progBox'); progBox.classList.remove('hidden');
-    const bar = $('#progressBar');
-    
-    try {
-      bar.style.width = '20%';
-      const fileName = file.name.toLowerCase();
-      let rows = [];
+document.getElementById('encBtn').onclick = async () => {
+  const memberName = document.getElementById('encMember').value;
+  if (!memberName) { alert('الرجاء اختيار العضو أولاً'); return; }
+  
+  const fileInput = document.getElementById('pdffile');
+  const file = fileInput.files[0];
+  if (!file) { alert('الرجاء اختيار ملف (PDF أو Excel)'); return; }
+  
+  const u = USERS.find(x => x.name === memberName);
+  if (!u) { alert('العضو غير موجود'); return; }
+  
+  const st = document.getElementById('encStatus'); st.classList.remove('hidden');
+  const progBox = document.getElementById('progBox'); progBox.classList.remove('hidden');
+  const bar = document.getElementById('progressBar');
+  
+  try {
+    bar.style.width = '20%';
+    const fileName = file.name.toLowerCase();
+    let rows = [];
 
-      if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-        st.textContent = '📊 جاري تحليل ملف Excel...';
-        bar.style.width = '50%';
-        
-        const data = await file.arrayBuffer();
-        const workbook = XLSX.read(data, { type: 'array' });
-        const firstSheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheetName];
-        rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-        
-        bar.style.width = '90%';
-      } else {
-        st.textContent = '📄 جاري تحليل ملف PDF...';
-        bar.style.width = '40%';
-        
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        
-        for (let n = 1; n <= pdf.numPages; n++) {
-          const pg = await pdf.getPage(n);
-          const tc = await pg.getTextContent();
-          let pageRows = tc.items.map(item => item.str);
-          if (pageRows.length > 0) rows.push(pageRows);
-          bar.style.width = `${40 + Math.round((n / pdf.numPages) * 50)}%`;
-        }
-      }
-
-      if (!rows || rows.length === 0) {
-        throw new Error('لم يتم استخراج أي بيانات من الملف');
-      }
-
-      bar.style.width = '75%';
-      st.textContent = `🔐 جاري تشفير ملف لـ ${memberName}...`;
-
-      const payload = { owner: memberName, ts: Date.now(), sourceFile: file.name, data: rows };
-      const encObj = encryptData(payload, u.password);
-
+    if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+      st.textContent = '📊 جاري تحليل ملف Excel...';
+      bar.style.width = '50%';
+      
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      
       bar.style.width = '90%';
-      st.textContent = '💾 تنزيل الملف المشفر...';
-
-      const blob = new Blob([JSON.stringify(encObj, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `data-${memberName}.enc.json`;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
-
-      bar.style.width = '100%';
-      st.textContent = `✅ تم إنتاج ملف مشفر يخص العضو: ${memberName}`;
-      setTimeout(() => { bar.style.width = '0%'; progBox.classList.add('hidden'); }, 3000);
-
-    } catch (err) {
-      console.error(err);
-      alert('حدث خطأ أثناء قراءة الملف: ' + err.message);
-      st.textContent = '❌ فشل المعالجة';
-      progBox.classList.add('hidden');
+    } else {
+      st.textContent = '📄 جاري تحليل ملف PDF...';
+      bar.style.width = '40%';
+      
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      
+      for (let n = 1; n <= pdf.numPages; n++) {
+        const pg = await pdf.getPage(n);
+        const tc = await pg.getTextContent();
+        let pageRows = tc.items.map(item => item.str);
+        if (pageRows.length > 0) rows.push(pageRows);
+        bar.style.width = `${40 + Math.round((n / pdf.numPages) * 50)}%`;
+      }
     }
-  };
-}
+
+    if (!rows || rows.length === 0) {
+      throw new Error('لم يتم استخراج أي بيانات من الملف');
+    }
+
+    bar.style.width = '75%';
+    st.textContent = `🔐 جاري تشفير ملف لـ ${memberName}...`;
+
+    const payload = { owner: memberName, ts: Date.now(), sourceFile: file.name, data: rows };
+    const encObj = encryptData(payload, u.password);
+
+    bar.style.width = '90%';
+    st.textContent = '💾 تنزيل الملف المشفر...';
+
+    const blob = new Blob([JSON.stringify(encObj, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `data-${memberName}.enc.json`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+
+    bar.style.width = '100%';
+    st.textContent = `✅ تم إنتاج ملف مشفر يخص العضو: ${memberName}`;
+    setTimeout(() => { bar.style.width = '0%'; progBox.classList.add('hidden'); }, 3000);
+
+  } catch (err) {
+    console.error(err);
+    alert('حدث خطأ أثناء قراءة الملف: ' + err.message);
+    st.textContent = '❌ فشل المعالجة';
+    progBox.classList.add('hidden');
+  }
+};
 
 /* =========================================================
    فك التشفير من العضو (يدعم عدة ملفات + اختيار استبدال/دمج)
