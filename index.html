@@ -2847,9 +2847,12 @@ async function initApp(){
   }
 
   // Service Worker
-  if('serviceWorker' in navigator){
-    try{ await navigator.serviceWorker.register('/sw.js'); }catch(e){}
-  }
+// Service Worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js')
+    .then(() => console.log('✅ SW registered'))
+    .catch(e => console.error('❌ SW failed:', e));
+}
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
